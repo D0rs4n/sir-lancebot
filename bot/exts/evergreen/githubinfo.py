@@ -209,13 +209,7 @@ class GithubInfo(commands.Cog):
         numbers = set(numbers)
 
         if len(numbers) > MAXIMUM_ISSUES:
-            embed = discord.Embed(
-                title=random.choice(ERROR_REPLIES),
-                color=Colours.soft_red,
-                description=f"Too many issues/PRs! (maximum of {MAXIMUM_ISSUES})"
-            )
-            await ctx.send(embed=embed)
-            await invoke_help_command(ctx)
+            raise commands.UserInputError(f"Too many issues/PRs! (maximum of {MAXIMUM_ISSUES})")
 
         results = [await self.fetch_issues(number, repository, user) for number in numbers]
         await ctx.send(embed=self.format_embed(results, user, repository))
