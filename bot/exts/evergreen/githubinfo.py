@@ -206,6 +206,8 @@ class GithubInfo(commands.Cog):
     ) -> None:
         """Command to retrieve issue(s) from a GitHub repository."""
         # Remove duplicates
+        if not numbers:
+            raise commands.UserInputError("You must enter at least one issue/pr number to fetch")
         numbers = set(numbers)
 
         if len(numbers) > MAXIMUM_ISSUES:
