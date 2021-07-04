@@ -8,6 +8,7 @@ from urllib.parse import quote
 
 import discord
 from discord.ext import commands
+from more_itertools import unique_everseen
 
 from bot.bot import Bot
 from bot.constants import (
@@ -175,7 +176,8 @@ class GithubInfo(commands.Cog):
 
         for result in results:
             if isinstance(result, IssueState):
-                description_list.append(f"{result.emoji} [{result.title}]({result.url})")
+                description_list.append(f"{result.emoji} [{result.repository}] "
+                                        f"#{result.number} [{result.title}]({result.url})")
             elif isinstance(result, FetchError):
                 description_list.append(f":x: [{result.return_code}] {result.message}")
 
@@ -208,8 +210,7 @@ class GithubInfo(commands.Cog):
         # Remove duplicates
         if not numbers:
             raise commands.UserInputError("You must enter at least one issue/pr number to fetch")
-        numbers = set(numbers)
-
+        numbers = list(unique_everseen(numbers))
         if len(numbers) > MAXIMUM_ISSUES:
             raise commands.UserInputError(f"Too many issues/PRs! (maximum of {MAXIMUM_ISSUES})")
 
@@ -250,7 +251,7 @@ class GithubInfo(commands.Cog):
 
             log.trace(f"Found {issues = }")
             # Remove duplicates
-            issues = set(issues)
+            issues = list(unique_everseen(issues))
 
             if len(issues) > MAXIMUM_ISSUES:
                 embed = discord.Embed(
